@@ -42,20 +42,6 @@ describe("Mortgage Calculator", () => {
     expect(screen.getByText("360")).toBeInTheDocument();
   });
 
-  test("prefills fields when a sample scenario is selected", () => {
-    render(<App />);
-
-    fireEvent.change(screen.getByLabelText(/sample scenario/i), {
-      target: { value: "high-ltv" },
-    });
-
-    expect(screen.getByLabelText(/loan amount/i)).toHaveValue(350000);
-    expect(screen.getByLabelText(/annual interest rate/i)).toHaveValue(4.5);
-    expect(screen.getByLabelText(/loan term/i)).toHaveValue(30);
-    expect(screen.getByLabelText(/mortgage type/i)).toHaveValue("Fixed Rate");
-    expect(screen.getByLabelText(/property value/i)).toHaveValue(400000);
-  });
-
   test("calculates interest-only mortgages with ltv ratio", () => {
     render(<App />);
 

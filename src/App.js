@@ -1,83 +1,7 @@
 import React, { useMemo, useState } from "react";
 import "./App.css";
 
-const SAMPLE_SCENARIOS = [
-  {
-    id: "basic",
-    name: "Basic Mortgage",
-    amount: 150000,
-    rate: 3.5,
-    years: 25,
-    mortgageType: "Fixed Rate",
-    propertyValue: "",
-  },
-  {
-    id: "large-loan",
-    name: "Large Loan Amount",
-    amount: 500000,
-    rate: 4.2,
-    years: 30,
-    mortgageType: "Adjustable Rate",
-    propertyValue: "",
-  },
-  {
-    id: "short-term",
-    name: "Shorter Term Loan",
-    amount: 200000,
-    rate: 3,
-    years: 15,
-    mortgageType: "Fixed Rate",
-    propertyValue: "",
-  },
-  {
-    id: "high-interest",
-    name: "High Interest Rate",
-    amount: 120000,
-    rate: 5.5,
-    years: 20,
-    mortgageType: "Fixed Rate",
-    propertyValue: "",
-  },
-  {
-    id: "low-loan-adjustable",
-    name: "Low Loan Amount, Adjustable",
-    amount: 75000,
-    rate: 2.8,
-    years: 10,
-    mortgageType: "Adjustable Rate",
-    propertyValue: "",
-  },
-  {
-    id: "interest-only",
-    name: "Interest-Only Mortgage",
-    amount: 250000,
-    rate: 4,
-    years: 25,
-    mortgageType: "Interest-Only",
-    propertyValue: "",
-  },
-  {
-    id: "high-ltv",
-    name: "High Loan-to-Value (LTV)",
-    amount: 350000,
-    rate: 4.5,
-    years: 30,
-    mortgageType: "Fixed Rate",
-    propertyValue: 400000,
-  },
-  {
-    id: "low-ltv",
-    name: "Low LTV Ratio",
-    amount: 100000,
-    rate: 3.75,
-    years: 20,
-    mortgageType: "Fixed Rate",
-    propertyValue: 250000,
-  },
-];
-
 function App() {
-  const [scenarioId, setScenarioId] = useState("");
   const [amount, setAmount] = useState("");
   const [rate, setRate] = useState("");
   const [years, setYears] = useState("");
@@ -160,31 +84,7 @@ function App() {
     });
   };
 
-  const applyScenario = (selectedId) => {
-    setScenarioId(selectedId);
-    setResult(null);
-    setError("");
-
-    if (!selectedId) {
-      return;
-    }
-
-    const selectedScenario = SAMPLE_SCENARIOS.find((item) => item.id === selectedId);
-    if (!selectedScenario) {
-      return;
-    }
-
-    setAmount(String(selectedScenario.amount));
-    setRate(String(selectedScenario.rate));
-    setYears(String(selectedScenario.years));
-    setMortgageType(selectedScenario.mortgageType);
-    setPropertyValue(
-      selectedScenario.propertyValue === "" ? "" : String(selectedScenario.propertyValue)
-    );
-  };
-
   const resetForm = () => {
-    setScenarioId("");
     setAmount("");
     setRate("");
     setYears("");
@@ -203,27 +103,6 @@ function App() {
         </p>
 
         <form onSubmit={calculate} noValidate>
-          <div className="field">
-            <label htmlFor="scenario">Sample Scenario</label>
-            <select
-              id="scenario"
-              name="scenario"
-              value={scenarioId}
-              onChange={(e) => applyScenario(e.target.value)}
-              aria-describedby="scenario-hint"
-            >
-              <option value="">Custom input</option>
-              {SAMPLE_SCENARIOS.map((scenario) => (
-                <option key={scenario.id} value={scenario.id}>
-                  {scenario.name}
-                </option>
-              ))}
-            </select>
-            <p id="scenario-hint" className="hint">
-              Choose a sample row from your spreadsheet to prefill values.
-            </p>
-          </div>
-
           <div className="field">
             <label htmlFor="amount">Loan Amount (GBP)</label>
             <input
@@ -374,36 +253,6 @@ function App() {
             )}
           </section>
         )}
-
-        <section className="sample-data" aria-labelledby="sample-data-title">
-          <h2 id="sample-data-title">Sample Data Reference</h2>
-          <div className="table-wrapper">
-            <table>
-              <thead>
-                <tr>
-                  <th scope="col">Scenario</th>
-                  <th scope="col">Loan Amount (GBP)</th>
-                  <th scope="col">Interest Rate (%)</th>
-                  <th scope="col">Loan Term (Years)</th>
-                  <th scope="col">Mortgage Type</th>
-                  <th scope="col">Property Value (GBP)</th>
-                </tr>
-              </thead>
-              <tbody>
-                {SAMPLE_SCENARIOS.map((scenario) => (
-                  <tr key={scenario.id}>
-                    <td>{scenario.name}</td>
-                    <td>{scenario.amount}</td>
-                    <td>{scenario.rate}</td>
-                    <td>{scenario.years}</td>
-                    <td>{scenario.mortgageType}</td>
-                    <td>{scenario.propertyValue === "" ? "-" : scenario.propertyValue}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </section>
       </section>
     </main>
   );
