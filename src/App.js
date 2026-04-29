@@ -5,7 +5,7 @@ const RATE_MIN = 0;
 const RATE_MAX = 20;
 const RATE_STEP = 0.01;
 const MAX_LOAN_AMOUNT = 2000000;
-const STORAGE_KEY = "mortgage-calculator-state-v1";
+const STORAGE_KEY = "mortgage-calculator-session-v1";
 
 const cleanNumericInput = (value) => value.replace(/[^\d.]/g, "");
 
@@ -41,7 +41,7 @@ function App() {
 
   useEffect(() => {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
+      const raw = sessionStorage.getItem(STORAGE_KEY);
       if (!raw) return;
       const saved = JSON.parse(raw);
       setAmount(saved.amount ?? "");
@@ -51,12 +51,12 @@ function App() {
       setPropertyValue(saved.propertyValue ?? "");
       setResult(saved.result ?? null);
     } catch {
-      localStorage.removeItem(STORAGE_KEY);
+      sessionStorage.removeItem(STORAGE_KEY);
     }
   }, []);
 
   useEffect(() => {
-    localStorage.setItem(
+    sessionStorage.setItem(
       STORAGE_KEY,
       JSON.stringify({ amount, rate, years, mortgageType, propertyValue, result })
     );
@@ -182,6 +182,11 @@ function App() {
         <p className="intro">
           Fill in the details below to get a quick mortgage estimate.
         </p>
+        <ol className="step-guide" aria-label="Calculator steps">
+          <li><strong>Step 1:</strong> Enter loan amount, interest rate, and term.</li>
+          <li><strong>Step 2:</strong> Pick mortgage type and optional property value.</li>
+          <li><strong>Step 3:</strong> Calculate and review payment plus cost breakdown.</li>
+        </ol>
         <form onSubmit={calculate} noValidate>
             <div className="field">
               <label htmlFor="amount">Loan Amount (GBP)</label>
@@ -355,6 +360,13 @@ function App() {
                 <p>Interest: {interestRatio.toFixed(1)}%</p>
               </div>
             </div>
+            <details className="learn-more">
+              <summary>Learn More About Your Estimate</summary>
+              <p>
+                Longer loan terms usually reduce monthly payments, but increase total interest paid
+                over time. Higher rates increase both monthly cost and total repayment.
+              </p>
+            </details>
             {result.mortgageType === "Tracker Rate" && (
               <p className="result-note">
                 Estimate uses the current rate as a fixed value over the full term.

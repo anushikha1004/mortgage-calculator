@@ -3,7 +3,7 @@ import App from "./App";
 
 describe("Mortgage Calculator", () => {
   beforeEach(() => {
-    localStorage.clear();
+    sessionStorage.clear();
   });
 
   test("renders calculator heading and primary action", () => {
@@ -116,7 +116,28 @@ describe("Mortgage Calculator", () => {
     });
     fireEvent.click(screen.getByRole("button", { name: /calculate my estimate/i }));
 
-    expect(screen.getByText(/cost breakdown/i)).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /cost breakdown/i })).toBeInTheDocument();
     expect(screen.getByLabelText(/principal versus interest chart/i)).toBeInTheDocument();
+  });
+
+  test("persists form values in session storage across remount", () => {
+    const { unmount } = render(<App />);
+
+    fireEvent.change(screen.getByLabelText(/loan amount/i), {
+      target: { value: "300000" },
+    });
+    fireEvent.change(screen.getByLabelText(/annual interest rate/i), {
+      target: { value: "4.25" },
+    });
+    fireEvent.change(screen.getByLabelText(/loan term/i), {
+      target: { value: "25" },
+    });
+
+    unmount();
+    render(<App />);
+
+    expect(screen.getByLabelText(/loan amount/i)).toHaveValue("300,000");
+    expect(screen.getByLabelText(/annual interest rate/i)).toHaveValue(4.25);
+    expect(screen.getByLabelText(/loan term/i)).toHaveValue(25);
   });
 });

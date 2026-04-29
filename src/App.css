@@ -51,6 +51,15 @@ h1 {
   color: var(--muted);
 }
 
+.step-guide {
+  margin: 0 0 18px;
+  padding-left: 18px;
+  color: #304252;
+  display: grid;
+  gap: 4px;
+  font-size: 0.92rem;
+}
+
 form {
   display: grid;
   gap: 12px;
@@ -259,6 +268,24 @@ button:active {
 
 .chart-legend p {
   margin: 0;
+}
+
+.learn-more {
+  margin-top: 14px;
+  border-top: 1px dashed #b6c9dd;
+  padding-top: 10px;
+}
+
+.learn-more summary {
+  cursor: pointer;
+  font-weight: 700;
+  color: #174a95;
+}
+
+.learn-more p {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 0.92rem;
 }
 
 .tooltip {
