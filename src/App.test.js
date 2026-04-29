@@ -2,6 +2,10 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import App from "./App";
 
 describe("Mortgage Calculator", () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
   test("renders calculator heading and primary action", () => {
     render(<App />);
 
@@ -96,5 +100,23 @@ describe("Mortgage Calculator", () => {
     expect(
       screen.getByText(/0% interest scenario: payment reflects principal repayment only/i)
     ).toBeInTheDocument();
+  });
+
+  test("shows principal vs interest breakdown chart after calculation", () => {
+    render(<App />);
+
+    fireEvent.change(screen.getByLabelText(/loan amount/i), {
+      target: { value: "250000" },
+    });
+    fireEvent.change(screen.getByLabelText(/annual interest rate/i), {
+      target: { value: "5" },
+    });
+    fireEvent.change(screen.getByLabelText(/loan term/i), {
+      target: { value: "30" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /calculate my estimate/i }));
+
+    expect(screen.getByText(/cost breakdown/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/principal versus interest chart/i)).toBeInTheDocument();
   });
 });

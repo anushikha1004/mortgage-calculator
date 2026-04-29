@@ -1,10 +1,11 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import "./App.css";
 
 const RATE_MIN = 0;
 const RATE_MAX = 20;
 const RATE_STEP = 0.01;
 const MAX_LOAN_AMOUNT = 2000000;
+const STORAGE_KEY = "mortgage-calculator-state-v1";
 
 const cleanNumericInput = (value) => value.replace(/[^\d.]/g, "");
 
@@ -37,6 +38,29 @@ function App() {
       }),
     []
   );
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      const saved = JSON.parse(raw);
+      setAmount(saved.amount ?? "");
+      setRate(saved.rate ?? "");
+      setYears(saved.years ?? "");
+      setMortgageType(saved.mortgageType ?? "Fixed Rate");
+      setPropertyValue(saved.propertyValue ?? "");
+      setResult(saved.result ?? null);
+    } catch {
+      localStorage.removeItem(STORAGE_KEY);
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({ amount, rate, years, mortgageType, propertyValue, result })
+    );
+  }, [amount, rate, years, mortgageType, propertyValue, result]);
 
   const calculate = (event) => {
     event.preventDefault();
@@ -98,6 +122,7 @@ function App() {
     const ltvRatio = homeValue ? (principal / homeValue) * 100 : null;
 
     setResult({
+      principal,
       monthlyPayment,
       totalRepayment,
       totalInterest,
@@ -147,6 +172,8 @@ function App() {
   };
 
   const hasBasicDetails = amount !== "" && rate !== "" && years !== "";
+  const principalRatio = result ? (result.principal / result.totalRepayment) * 100 : 0;
+  const interestRatio = result ? (result.totalInterest / result.totalRepayment) * 100 : 0;
 
   return (
     <main className="page">
@@ -317,6 +344,17 @@ function App() {
                 </div>
               )}
             </dl>
+            <div className="cost-chart" aria-label="Principal versus interest chart">
+              <h3>Cost Breakdown</h3>
+              <div className="chart-bar">
+                <span className="bar-principal" style={{ width: `${principalRatio}%` }} />
+                <span className="bar-interest" style={{ width: `${interestRatio}%` }} />
+              </div>
+              <div className="chart-legend">
+                <p>Principal: {principalRatio.toFixed(1)}%</p>
+                <p>Interest: {interestRatio.toFixed(1)}%</p>
+              </div>
+            </div>
             {result.mortgageType === "Tracker Rate" && (
               <p className="result-note">
                 Estimate uses the current rate as a fixed value over the full term.
