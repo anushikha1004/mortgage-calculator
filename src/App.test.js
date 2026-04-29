@@ -9,14 +9,15 @@ describe("Mortgage Calculator", () => {
       screen.getByRole("heading", { name: /mortgage calculator/i })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /calculate payment/i })
+      screen.getByRole("button", { name: /calculate my estimate/i })
     ).toBeInTheDocument();
+    expect(screen.getByLabelText(/interest rate slider/i)).toBeInTheDocument();
   });
 
   test("shows validation error for missing fields", () => {
     render(<App />);
 
-    fireEvent.click(screen.getByRole("button", { name: /calculate payment/i }));
+    fireEvent.click(screen.getByRole("button", { name: /calculate my estimate/i }));
 
     expect(screen.getByRole("alert")).toHaveTextContent(/fill in all fields/i);
   });
@@ -34,7 +35,7 @@ describe("Mortgage Calculator", () => {
       target: { value: "30" },
     });
 
-    fireEvent.click(screen.getByRole("button", { name: /calculate payment/i }));
+    fireEvent.click(screen.getByRole("button", { name: /calculate my estimate/i }));
 
     expect(screen.getByText("£1,342.05")).toBeInTheDocument();
     expect(screen.getByText("£483,139.46")).toBeInTheDocument();
@@ -60,9 +61,40 @@ describe("Mortgage Calculator", () => {
     fireEvent.change(screen.getByLabelText(/property value/i), {
       target: { value: "400000" },
     });
-    fireEvent.click(screen.getByRole("button", { name: /calculate payment/i }));
+    fireEvent.click(screen.getByRole("button", { name: /calculate my estimate/i }));
 
     expect(screen.getByText("£833.33")).toBeInTheDocument();
     expect(screen.getByText("62.50%")).toBeInTheDocument();
+  });
+
+  test("syncs interest slider and numeric rate input", () => {
+    render(<App />);
+
+    fireEvent.change(screen.getByLabelText(/interest rate slider/i), {
+      target: { value: "6.5" },
+    });
+
+    expect(screen.getByLabelText(/annual interest rate/i)).toHaveValue(6.5);
+    expect(screen.getByText("6.50%")).toBeInTheDocument();
+  });
+
+  test("handles 0% interest edge case", () => {
+    render(<App />);
+
+    fireEvent.change(screen.getByLabelText(/loan amount/i), {
+      target: { value: "120000" },
+    });
+    fireEvent.change(screen.getByLabelText(/annual interest rate/i), {
+      target: { value: "0" },
+    });
+    fireEvent.change(screen.getByLabelText(/loan term/i), {
+      target: { value: "20" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /calculate my estimate/i }));
+
+    expect(screen.getByText("£500.00")).toBeInTheDocument();
+    expect(
+      screen.getByText(/0% interest scenario: payment reflects principal repayment only/i)
+    ).toBeInTheDocument();
   });
 });

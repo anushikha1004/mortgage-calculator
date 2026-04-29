@@ -1,6 +1,10 @@
 import React, { useMemo, useState } from "react";
 import "./App.css";
 
+const RATE_MIN = 0;
+const RATE_MAX = 20;
+const RATE_STEP = 0.01;
+
 function App() {
   const [amount, setAmount] = useState("");
   const [rate, setRate] = useState("");
@@ -94,13 +98,64 @@ function App() {
     setError("");
   };
 
+  const handleRateInputChange = (value) => {
+    if (value === "") {
+      setRate("");
+      return;
+    }
+
+    const parsed = Number(value);
+    if (Number.isNaN(parsed)) {
+      return;
+    }
+
+    const clampedValue = Math.min(Math.max(parsed, RATE_MIN), RATE_MAX);
+    setRate(String(clampedValue));
+  };
+
+  const applyExample = (example) => {
+    setAmount(String(example.amount));
+    setRate(String(example.rate));
+    setYears(String(example.years));
+    setMortgageType(example.type);
+    setPropertyValue(example.propertyValue ? String(example.propertyValue) : "");
+    setResult(null);
+    setError("");
+  };
+
   return (
     <main className="page">
       <section className="container" aria-labelledby="mortgage-title">
         <h1 id="mortgage-title">Mortgage Calculator</h1>
         <p className="intro">
-          Enter your loan details to estimate your monthly mortgage payment.
+          Fill in the details below to get a quick mortgage estimate.
         </p>
+        <div className="example-row" aria-label="Example presets">
+          <button
+            type="button"
+            className="example-btn"
+            onClick={() =>
+              applyExample({ amount: 200000, rate: 4.5, years: 25, type: "Fixed Rate" })
+            }
+          >
+            Example: First Home
+          </button>
+          <button
+            type="button"
+            className="example-btn"
+            onClick={() =>
+              applyExample({
+                amount: 350000,
+                rate: 5.1,
+                years: 30,
+                type: "Adjustable Rate",
+                propertyValue: 430000,
+              })
+            }
+          >
+            Example: Family Home
+          </button>
+        </div>
 
         <form onSubmit={calculate} noValidate>
           <div className="field">
@@ -119,27 +174,42 @@ function App() {
               required
             />
             <p id="amount-hint" className="hint">
-              Total amount you want to borrow.
+              Total amount you plan to borrow from the lender.
             </p>
           </div>
 
           <div className="field">
             <label htmlFor="rate">Annual Interest Rate (%)</label>
+            <div className="rate-row">
+              <input
+                id="rateSlider"
+                className="rate-slider"
+                type="range"
+                min={RATE_MIN}
+                max={RATE_MAX}
+                step={RATE_STEP}
+                value={rate === "" ? RATE_MIN : Number(rate)}
+                onChange={(e) => setRate(e.target.value)}
+                aria-label="Interest rate slider"
+              />
+              <span className="rate-chip">{rate === "" ? "0.00" : Number(rate).toFixed(2)}%</span>
+            </div>
             <input
               id="rate"
               name="rate"
               type="number"
-              min="0"
-              step="0.01"
+              min={RATE_MIN}
+              max={RATE_MAX}
+              step={RATE_STEP}
               inputMode="decimal"
               value={rate}
-              onChange={(e) => setRate(e.target.value)}
+              onChange={(e) => handleRateInputChange(e.target.value)}
               placeholder="e.g. 4.75"
               aria-describedby="rate-hint"
               required
             />
             <p id="rate-hint" className="hint">
-              Use the nominal yearly rate from your lender.
+              Use the nominal yearly rate from your lender (0% to 20%).
             </p>
           </div>
 
@@ -159,7 +229,7 @@ function App() {
               required
             />
             <p id="years-hint" className="hint">
-              Number of years over which you will repay the loan.
+              Repayment period in years (for example, 20 to 35 years).
             </p>
           </div>
 
@@ -192,7 +262,7 @@ function App() {
               aria-describedby="property-hint"
             />
             <p id="property-hint" className="hint">
-              Enter to calculate loan-to-value (LTV).
+              Optional, but helpful for loan-to-value (LTV) checks.
             </p>
           </div>
 
@@ -203,9 +273,9 @@ function App() {
           )}
 
           <div className="actions">
-            <button type="submit">Calculate Payment</button>
+            <button type="submit">Calculate My Estimate</button>
             <button type="button" className="secondary" onClick={resetForm}>
-              Clear
+              Reset Form
             </button>
           </div>
         </form>
@@ -249,6 +319,11 @@ function App() {
             {result.mortgageType === "Interest-Only" && (
               <p className="result-note">
                 Interest-only estimate assumes principal is repaid as a lump sum at term end.
+              </p>
+            )}
+            {Number(rate) === 0 && (
+              <p className="result-note">
+                0% interest scenario: payment reflects principal repayment only.
               </p>
             )}
           </section>
