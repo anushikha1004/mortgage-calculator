@@ -75,7 +75,7 @@ describe("Mortgage Calculator", () => {
     });
 
     expect(screen.getByLabelText(/annual interest rate/i)).toHaveValue(6.5);
-    expect(screen.getByText("6.50%")).toBeInTheDocument();
+    expect(screen.getAllByText("6.50%").length).toBeGreaterThan(0);
   });
 
   test("handles 0% interest edge case", () => {

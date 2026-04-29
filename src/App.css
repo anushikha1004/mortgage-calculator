@@ -51,27 +51,6 @@ h1 {
   color: var(--muted);
 }
 
-.example-row {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-bottom: 16px;
-}
-
-.example-btn {
-  border: 1px solid #cfe0f6;
-  background: #f4f9ff;
-  color: #18447e;
-  border-radius: 999px;
-  padding: 8px 12px;
-  font-size: 0.85rem;
-  font-weight: 700;
-}
-
-.example-btn:hover {
-  background: #e8f2ff;
-}
-
 form {
   display: grid;
   gap: 12px;
@@ -84,6 +63,9 @@ form {
 
 label {
   font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .rate-row {
@@ -126,6 +108,11 @@ select {
   padding: 12px;
   font-size: 1rem;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+input::placeholder {
+  color: #5a6572;
+  opacity: 1;
 }
 
 input:focus-visible,
@@ -235,6 +222,46 @@ button:active {
   font-size: 0.92rem;
 }
 
+.tooltip {
+  position: relative;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #d9e7fa;
+  color: #0f4ca8;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: help;
+}
+
+.tooltip-text {
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 250px;
+  visibility: hidden;
+  opacity: 0;
+  background: #1f2b37;
+  color: #fff;
+  text-align: left;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  transition: opacity 0.2s ease;
+  z-index: 5;
+}
+
+.tooltip:hover .tooltip-text,
+.tooltip:focus .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
+
 @media (max-width: 640px) {
   .container {
     padding: 20px 16px;
@@ -253,4 +280,5 @@ button:active {
   button {
     width: 100%;
   }
+
 }
